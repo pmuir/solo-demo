@@ -22,3 +22,5 @@ clear
 magic_prompt
 
 pe "kubectl logs -n istio-system -l app=ztunnel  -f | grep everything"
+
+cmd
