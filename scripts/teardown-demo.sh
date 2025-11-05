@@ -10,5 +10,6 @@ kubectl delete gateway -n kagent mcpserver-server-everything-waypoint
 kubectl delete httproute -n kagent mcpserver-server-everything-waypoint
 kubectl delete gloootrafficpolicy -n kagent accesspolicy-agent-access-policy-waypoint accesspolicy-user-access-policy-waypoint
 sed -i '' 's/action: DENY/action: ALLOW/g' "$SCRIPT_DIR/../access-policies/user-access-policy.yaml"
+kubectl label namespaces kagent istio.io/dataplane-mode-
 kubectl rollout restart deployment -n kagent kagent-controller
 rm -rf demoagent

@@ -19,8 +19,6 @@ clear
 
 # Put your stuff here
 
-kubectl logs -n istio-system -l app=ztunnel  -f | grep everything
+magic_prompt
 
-pei "cd demoagent"
-
-pe "kagent deploy . --env-file .env.production --namespace kagent --image pmuir/demoagent:1 --platform linux/amd64,linux/arm64 --dry-run > deploy.yaml"
+pe "kubectl logs -n istio-system -l app=ztunnel  -f | grep everything"

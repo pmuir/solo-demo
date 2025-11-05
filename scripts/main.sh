@@ -42,6 +42,8 @@ pei "kagent run"
 
 pei "kagent deploy . --env-file .env.production --namespace kagent --image pmuir/demoagent:12 --platform linux/amd64,linux/arm64"
 
+pe "kubectl label namespaces kagent istio.io/dataplane-mode=ambient "
+
 pe "kubectl label mcpservers.kagent.dev server-everything kagent.solo.io/waypoint=true"
 
 pe "kubectl apply -f ../resources/access-policies"
