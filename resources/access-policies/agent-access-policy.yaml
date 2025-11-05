@@ -1,0 +1,15 @@
+apiVersion: policy.kagent-enterprise.solo.io/v1alpha1
+kind: AccessPolicy
+metadata:
+  name: agent-access-policy
+  namespace: kagent
+spec:
+  action: ALLOW
+  from:
+    subjects:
+    - kind: Agent
+      name: demoagent
+      namespace: kagent
+  targetRef:
+    kind: MCPServer
+    name: server-everything

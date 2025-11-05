@@ -1,0 +1,20 @@
+apiVersion: policy.kagent-enterprise.solo.io/v1alpha1
+kind: AccessPolicy
+metadata:
+  name: user-access-policy
+  namespace: kagent
+spec:
+  action: ALLOW
+  from:
+    subjects:
+    - kind: UserGroup
+      name: admin@kagent.dev
+      userGroup:
+        claimName: sub
+        claimValue: acf04f2b-f529-45ef-a2d8-5311fc3c8301
+        jwksKey:
+          inline: |
+            {"keys":[{"alg":"RS256","e":"AQAB","kid":"wf_Ncb2F7FiqSEBWp2eeIIghXwLOCEG1YtAjhcWB5ds","kty":"RSA","n":"tx71LVqUIz67_Wv6s-9KlzxA-uOfHXzj9HScpGgB0nSxAWo2oWHwxa-vL85OI0iSl2caEHTwYXqZNbBInJD0rk72zroxN-rQVLucpVvdZgQSBgEtxg846EVSjD5DAlvXJ85QuaCRTW7cl3sFXriYzDQkytZhODWcuxxiqrFOgbUIn1RsII38JEKhkItENQQRO52DCmx0ISYVYqGIJY1wNgDciAZghnc0iqcweBPPiF9oKrtH_tRTDYLfJkJfD3KYG9ygV0VSJTaWs0VYmHe465IiDktCS9gxmf_GOkvLQCovhjrXiZsGesmIMSmWrqISdjNKFCP9387TS2yEcohjew"}]}
+  targetRef:
+    kind: MCPServer
+    name: server-everything
