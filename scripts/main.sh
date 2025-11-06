@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if [[ "$TEST" == "true" ]]; then
+  echo "TEST mode enabled"
+  DEMO_TYPE_SPEED=1000
+  DEMO_NO_WAIT=true
+fi
+
 ########################
 # include the magic
 ########################
@@ -12,11 +18,7 @@ DEMO_CMD_COLOR="\033[0;37m"  # Non-bold white
 DEMO_PROMPT="${GREEN}➜ ${CYAN}\W ${COLOR_RESET}"
 
 # TEST mode configuration
-if [[ "$TEST" == "true" ]]; then
-  echo "TEST mode enabled"
-  DEMO_TYPE_SPEED=1000
-  DEMO_NO_WAIT=true
-fi
+
 
 # NO_SECURITY mode configuration
 if [[ "$NO_SECURITY" == "true" ]]; then
@@ -87,7 +89,7 @@ pei "cp ../resources/.env.production ."
 pe "kagent deploy . --env-file .env.production --namespace kagent --image ${DOCKER_REPO}:${TAG1} --platform linux/amd64,linux/arm64"
 
 if [[ "$NO_SECURITY" != "true" ]]; then
-  pe "kubectl label namespaces kagent istio.io/dataplane-mode=ambient "
+  pe "kubectl label namespaces kagent istio.io/dataplane-mode=ambient"
 
   pe "kubectl label mcpservers.kagent.dev server-everything kagent.solo.io/waypoint=true"
 
