@@ -1,0 +1,86 @@
+kind: Gateway
+apiVersion: gateway.networking.k8s.io/v1
+metadata:
+  name: agentgateway
+  labels:
+    app: agentgateway
+spec:
+  gatewayClassName: agentgateway-enterprise
+  listeners:
+  - protocol: HTTP
+    port: 8080
+    name: http
+    allowedRoutes:
+      namespaces:
+        from: All
+---
+apiVersion: gateway.kgateway.dev/v1alpha1
+kind: Backend
+metadata:
+  name: mcp-backend
+spec:
+  type: MCP
+  mcp:
+    targets:
+    - name: mcp-target
+      static:
+        host: server-everything.kagent.svc.cluster.local
+        port: 3000
+        protocol: StreamableHTTP
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: mcp
+spec:
+  parentRefs:
+  - name: agentgateway
+  rules:
+    - backendRefs:
+      - name: mcp-backend
+        group: gateway.kgateway.dev
+        kind: Backend
+---
+apiVersion: gloo.solo.io/v1alpha1
+kind: GlooTrafficPolicy
+metadata:
+  name: jwt-policy
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: agentgateway
+  glooJWT:
+    beforeExtAuth:
+      providers:
+        example:
+          issuer: kagent.kagent
+          audiences:
+            - kagent/demoagent
+          jwks:
+            local:
+              key: | # replace this with the public key from the jwks.json url 
+                {"keys":[{"alg":"RS256","e":"AQAB","kid":"wf_Ncb2F7FiqSEBWp2eeIIghXwLOCEG1YtAjhcWB5ds","kty":"RSA","n":"tx71LVqUIz67_Wv6s-9KlzxA-uOfHXzj9HScpGgB0nSxAWo2oWHwxa-vL85OI0iSl2caEHTwYXqZNbBInJD0rk72zroxN-rQVLucpVvdZgQSBgEtxg846EVSjD5DAlvXJ85QuaCRTW7cl3sFXriYzDQkytZhODWcuxxiqrFOgbUIn1RsII38JEKhkItENQQRO52DCmx0ISYVYqGIJY1wNgDciAZghnc0iqcweBPPiF9oKrtH_tRTDYLfJkJfD3KYG9ygV0VSJTaWs0VYmHe465IiDktCS9gxmf_GOkvLQCovhjrXiZsGesmIMSmWrqISdjNKFCP9387TS2yEcohjew"}]}
+---
+apiVersion: kagent.dev/v1alpha2
+kind: Agent
+metadata:
+  name: demoagent
+spec:
+  byo:
+    deployment:
+      env:
+      - name: OPENAI_API_KEY
+        valueFrom:
+          secretKeyRef:
+            key: OPENAI_API_KEY
+            name: demoagent-env
+      - name: DOCKER_REPO
+        valueFrom:
+          secretKeyRef:
+            key: DOCKER_REPO
+            name: demoagent-env
+      image: pmuir/demoagent:36
+      replicas: 1
+  type: BYO
+

@@ -1,0 +1,15 @@
+apiVersion: gateway.kgateway.dev/v1alpha1
+kind: TrafficPolicy
+metadata:
+  name: tool-policy
+spec:
+  targetRefs:
+    - group: gateway.kgateway.dev
+      kind: Backend
+      name: mcp-backend
+  rbac:
+    action: Allow
+    policy:  
+      matchExpressions:
+        - 'jwt.sub == "acf04f2b-f529-45ef-a2d8-5311fc3c8301" && &&  mcp.tool.name == "printEnv"'
+
