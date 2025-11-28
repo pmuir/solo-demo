@@ -11,5 +11,42 @@ spec:
     action: Allow
     policy:  
       matchExpressions:
-        - 'jwt.sub == "acf04f2b-f529-45ef-a2d8-5311fc3c8301" && &&  mcp.tool.name == "printEnv"'
-
+        - 'jwt.sub == "acf04f2b-f529-45ef-a2d8-5311fc3c8301" && mcp.tool.name == "printEnv"'
+---
+apiVersion: gloo.solo.io/v1alpha1
+kind: GlooTrafficPolicy
+metadata:
+  name: jwt-policy
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: agentgateway
+  glooJWT:
+    beforeExtAuth:
+      providers:
+        example:
+          issuer: kagent.kagent
+          audiences:
+            - kagent/demoagent
+          jwks:
+            local:
+              key: | # replace this with the public key from the jwks.json url 
+                {"alg":"RS256","e":"AQAB","kid":"8g8vM9U6DOOgbSrobS5Mi1a8ba9W952wbrw8wO4z0tg","kty":"RSA","n":"sLhQ9QFA9qIbGvd4oTdlS2jhJc-ljuJI4iQFUaY2g-0P4gunmk9sdQL18koPEjUe3DTNHzVOTA8LOpnnjqxOi8ZuodKxMGgLd7QARMWJ1ogeLIaEkkOyTe03i7TxNv2o35eKy-CfPGvLIVNuLIWII3mJQUFo0rYAJxZxo7P0gKox-9iIJ58zr94uiRhr0yYT85bEffae7XNtSugbDFxSPfz9EScFeNtKqGqyL33i0QHEazkE4IJrisRctW0-dObeCwpIc97zvxo2ZGuMQr7ktXZZj9_RBSWhSENjNTjaEKWaIScD2Hl3bkdwpm5lDzV4KsZuBRjy-s1fLuSAKUKiEQ"}
+---
+apiVersion: kagent.dev/v1alpha2
+kind: Agent
+metadata:
+  name: demoagent
+spec:
+  byo:
+    deployment:
+      env:
+      - name: OPENAI_API_KEY
+        valueFrom:
+          secretKeyRef:
+            key: OPENAI_API_KEY
+            name: demoagent-env
+      image: pmuir/demoagent:36
+      replicas: 1
+  type: BYO
