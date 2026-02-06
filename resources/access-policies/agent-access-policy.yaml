@@ -13,4 +13,4 @@ spec:
     kind: MCPServer
     name: server-everything
     tools:
-    - printEnv
+    - get-env
